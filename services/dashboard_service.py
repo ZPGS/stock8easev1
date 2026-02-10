@@ -1,5 +1,5 @@
 # services/dashboard_service.py
-from flask import Blueprint, render_template,jsonify,url_for
+from flask import Blueprint, redirect, render_template,jsonify,url_for
 from datetime import datetime
 
 from sqlalchemy import func
@@ -8,7 +8,7 @@ from services.stock_service import Stock
 from services.billing_service import Billing
 from services.reminders_service import reminders_bp
 from services.account_service import Account
-import pywhatkit as kit
+#import pywhatkit as kit
 
 dashboard_bp = Blueprint('dashboard', __name__)
 # services/dashboard_service.py
@@ -128,50 +128,70 @@ def add_expired():
         return jsonify({"message": "Expired products added", "combined_items": combined_items}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+from datetime import datetime
+from sqlalchemy import extract
+
+import urllib.parse
+
+def generate_whatsapp_link(phone, message):
+    phone = phone.replace("+", "").replace(" ", "")
+    encoded_message = urllib.parse.quote(message)
+    return f"https://wa.me/{phone}?text={encoded_message}"
+
 
 def send_whatsapp_reminder(user_phone):
     try:
-        # Get low stock items
+        # Low stock items
         low_stock_items = Stock.query.filter(Stock.quantity <= 10).all()
         low_stock_names = [item.item_name for item in low_stock_items]
 
-        # Get today's sales and profit
-        today_sales = sum([bill.total_price for bill in Billing.query.filter(db.extract('day', Billing.timestamp) == datetime.now().day).all()])
-        today_profit = sum([bill.total_profit for bill in Billing.query.filter(db.extract('day', Billing.timestamp) == datetime.now().day).all()])
+        # Today's sales & profit
+        today = datetime.utcnow().day
+        bills_today = Billing.query.filter(extract('day', Billing.timestamp) == today).all()
 
-        # Get expired products
-        expired_products = db.session.query(Stock.item_name).filter(Stock.expiry <= datetime.utcnow()).all()
-        expired_item_names = [product.item_name for product in expired_products]
+        today_sales = sum(bill.total_price for bill in bills_today)
+        today_profit = sum(bill.total_profit for bill in bills_today)
 
-        # Prepare the message content
-        message_content = f"Reminder: \n\n"
-        message_content += f"Limited Stock Items: {', '.join(low_stock_names)}\n" if low_stock_names else "No limited stock items.\n"
-        message_content += f"Today's Sales: ${today_sales:.2f}\n"
-        message_content += f"Today's Profit: ${today_profit:.2f}\n"
-        message_content += f"Expired Items: {', '.join(expired_item_names)}\n" if expired_item_names else "No expired items.\n"
+        # Expired products
+        expired_products = Stock.query.filter(Stock.expiry <= datetime.utcnow()).all()
+        expired_item_names = [item.item_name for item in expired_products]
 
-        # Send WhatsApp message using PyWhatKit (to the user's phone)
-        kit.sendwhatmsg(f"+{user_phone}", message_content, datetime.now().hour, datetime.now().minute + 2)  # Sends message 2 minutes from now
+        # Message content
+        message_content = (
+            "📊 *Daily Dashboard Reminder*\n\n"
+            f"⚠️ Limited Stock Items: {', '.join(low_stock_names) if low_stock_names else 'None'}\n"
+            f"💰 Today's Sales: ₹{today_sales:.2f}\n"
+            f"📈 Today's Profit: ₹{today_profit:.2f}\n"
+            f"⏰ Expired Items: {', '.join(expired_item_names) if expired_item_names else 'None'}\n"
+        )
 
-        return {"message": "Reminder sent successfully"}, 200
+        whatsapp_link = generate_whatsapp_link(user_phone, message_content)
+
+        return {
+            "message": "WhatsApp reminder ready",
+            "whatsapp_url": whatsapp_link
+        }, 200
 
     except Exception as e:
         return {"error": str(e)}, 500
+
     
-@dashboard_bp.route('/send-reminder', methods=['POST' , 'GET'])
+@dashboard_bp.route('/send-reminder', methods=['GET'])
 def send_dashboard_reminder():
     try:
-        # Get user phone number (ensure your model has this attribute)
-        user = Account.query.first()  # Modify based on your model and logic
-        user_phone = Account.mobile  # Assuming the user has a phone attribute
+        user = Account.query.first()
+        if not user or not user.mobile:
+            return jsonify({"error": "User phone number not found"}), 400
 
-        # Send WhatsApp reminder
-        response, status = send_whatsapp_reminder(user_phone)
-        
-        return jsonify(response,user_phone), status
+        response, status = send_whatsapp_reminder(user.mobile)
+
+        #return jsonify(response), status
+        return redirect(response["whatsapp_url"])
+
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 def get_total_profit():
     total_profit = db.session.query(func.sum(Billing.total_profit)) \

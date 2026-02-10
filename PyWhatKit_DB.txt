@@ -18,3 +18,18 @@ Time: 12:9
 Phone Number: +9637354092
 Message: Dear Shantiprasad,You have the following unpaid bills:Product: BOU2, Amount: 20.0Total Amount Due: ₹20.00Please make the payment at your earliest convenience.Regards,Your Store Name: SantKripaPowered By Stock8Ease
 --------------------
+Date: 10/2/2026
+Time: 18:33
+Phone Number: +9637354092
+Message: Dear Prasad Chandrakant Zungare,You have the following unpaid bills:Product: BOU1, Amount: 16.0Total Amount Due: ₹16.00Please make the payment at your earliest convenience.Regards,Your Store Name: Anvi PharmacyPowered By Stock8Ease
+--------------------
+Date: 10/2/2026
+Time: 20:25
+Phone Number: +Account.mobile
+Message: Reminder: Limited Stock Items: Bourbon GoldToday's Sales: $16.00Today's Profit: $-4.00No expired items.
+--------------------
+Date: 10/2/2026
+Time: 20:41
+Phone Number: +9637354092
+Message: Dear Prasad Chandrakant Zungare,You have the following unpaid bills:Product: BOU1, Amount: 16.0Total Amount Due: ₹16.00Please make the payment at your earliest convenience.Regards,Your Store Name: Anvi PharmacyPowered By Stock8Ease
+--------------------

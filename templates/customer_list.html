@@ -20,11 +20,14 @@
           <td>{{ customer.customer_mobile }}</td>
           <td>{{ customer.total_unpaid }}</td>
           <td>
-            <a
-              href="{{ url_for('customer_service.send_reminder', customer_name=customer.customer_name, customer_mobile=customer.customer_mobile) }}"
-              class="btn btn-warning"
-              >Send Reminder</a
-            >
+          <a href="{{ url_for('customer_service.send_reminder', 
+        customer_name=customer.customer_name, 
+        customer_mobile=customer.customer_mobile) }}"
+   class="btn btn-success"
+   target="_blank">
+   Send WhatsApp Reminder
+</a>
+
           </td>
         </tr>
         {% endfor %}
