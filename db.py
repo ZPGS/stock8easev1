@@ -1,4 +1,5 @@
 from app import app
+from run import app as run
 from extensions import db
 from services.stock_service import Stock  # Import models
 from services.billing_service import Billing  # Import models
@@ -13,7 +14,7 @@ from services.billing_service import Billing  # Import models
 from services.party_service import Party  # Import models
 
 # Initialize the app and db
-with app.app_context():
+with run.app_context():
     # Create the database tables if they don't exist
     db.create_all()
 

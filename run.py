@@ -26,9 +26,9 @@ app.config['BASIC_AUTH_PASSWORD'] = 'admin'
 app.secret_key = 'your_secret_key'
 
 # Configure SQLite Database URI
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///inventory.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///inventory.db'
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://DB_USER:DB_PASS@mysql-1f761a7d-prasadcpatil246-f8f0.b.aivencloud.com:14627/inventorydb'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://admin:admin@localhost/inventory_db'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://admin:admin@localhost/inventory_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize the database
